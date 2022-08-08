@@ -22,6 +22,7 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework import status, viewsets
 from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
 
 from .models import Poll, Choice
 from .serializers import PollSerializer, ChoiceSerializer, UserSerializer, VoteSerializer
@@ -40,12 +41,17 @@ from .serializers import PollSerializer, ChoiceSerializer, UserSerializer, VoteS
 class PollViewSet(viewsets.ModelViewSet):
     queryset = Poll.objects.all()
     serializer_class = PollSerializer
+    # alterações para limitar acesso pelo user (token)
+    def destroy(self, request, *args, **kwargs):
+        poll = Poll.objects.get(pk=self.kwargs["pk"])
+        if not request.user == poll.created_by:
+            raise PermissionDenied("You can not delete this poll.")
+        return super().destroy(request, *args, **kwargs)
 
 
 # class ChoiceList(generics.ListCreateAPIView):
 #     queryset = Choice.objects.all()
 #     serializer_class = ChoiceSerializer
-
 
 class ChoiceList(generics.ListCreateAPIView):
     
@@ -54,7 +60,17 @@ class ChoiceList(generics.ListCreateAPIView):
         return queryset
     
     serializer_class = ChoiceSerializer
+    # alterações para limitar acesso pelo user (token)
+    def post(self, request, *args, **kwargs):
+        poll = Poll.objects.get(pk=self.kwargs["pk"])
+        if not request.user == poll.created_by:
+            raise PermissionDenied("You can not create choice for this poll.")
+        return super().post(request, *args, **kwargs)
 
+    
+    
+    
+    
 
 # class CreateVote(generics.CreateAPIView):
 #     serializer_class = VoteSerializer
