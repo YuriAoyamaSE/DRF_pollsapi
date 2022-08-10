@@ -21,8 +21,8 @@ steps:
       - run:
           name: install dependencies
           command: |
-            python3 -m venv venv
-            . venv/bin/activate
+            python3 -m venv .venv
+            .venv/Scripts/activate
             pip install -r pollsapi/requirements.txt
 
       - save_cache:
@@ -33,7 +33,7 @@ steps:
       - run:
           name: run tests
           command: |
-            . venv/bin/activate
+            .venv/Scripts/activate
             cd pollsapi
             python manage.py test
 
