@@ -32,3 +32,8 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register('polls', PollViewSet, basename='polls')
 urlpatterns.append(path('', include(router.urls)))
+
+# usando swagger para documentação
+from rest_framework_swagger.views import get_swagger_view
+schema_view = get_swagger_view(title='Polls API')
+urlpatterns.append(path(r'swagger-docs/', schema_view))
